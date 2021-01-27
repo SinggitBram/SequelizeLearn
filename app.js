@@ -69,6 +69,36 @@ app.get("/posts", async (req, res) => {
   }
 });
 
+app.delete("/users/:uuid", async (req, res) => {
+  const uuid = req.params.uuid;
+  {
+    try {
+      const user = await User.findOne({ where: { uuid } });
+      await user.destroy();
+      return res.json({ msg: "User Deleted" });
+    } catch (err) {
+      return res.status(500).json({ error: "something went wrong" });
+    }
+  }
+});
+
+app.put("/users/:uuid", async (req, res) => {
+  const uuid = req.params.uuid;
+  const { name, email, role } = req.body;
+  {
+    try {
+      const user = await User.findOne({ where: { uuid } });
+      user.name = name;
+      user.email = email;
+      user.role = role;
+      await user.save();
+      return res.json(user);
+    } catch (err) {
+      return res.status(500).json({ error: "something went wrong" });
+    }
+  }
+});
+
 app.listen({ port: 5000 }, async () => {
   console.log("server up on http://localhost:5000");
   await sequelize.authenticate();
